@@ -1,3 +1,73 @@
+let columns
+function createGrid(cells, classAdd="") {
+    columns = [];
+    gridContainer.innerHTML = "" 
+    let row;
+    let col;
+    // Create 16 rows
+    for (let i = 0; i < cells; i++) {
+        row = document.createElement("div");
+        row.classList = "grid";
+
+        // Create 16 rows
+        for (let j = 0; j < cells; j++) {
+            col = document.createElement("div");
+            col.classList = `grid ${classAdd}`;
+            columns.push(col);
+            row.appendChild(col);
+        }
+        gridContainer.appendChild(row);
+    }
+}
+function drag(e) {
+    let position = +window.getComputedStyle(gridSizeBtn).left.slice(0,-2);
+    if (position < 99 && e.movementX > 0 && e.movementX > 3) {
+        position = position + 5 >= 99 ? 98 : position + 5;
+        gridSizeBtn.style.left = `${position + 1}px`;
+        position += 1;
+    }
+    else if (position < 99 && e.movementX > 0) {
+        gridSizeBtn.style.left = `${position + 1}px`;
+        position += 1;
+    }
+    else if (position > 0 && e.movementX < 0 && e.movementX < -3) {
+        position = position - 5 <= 0 ? 1 : position - 5;
+        gridSizeBtn.style.left = `${position - 1}px`;
+        position -= 1;
+    }
+    else if (position > 0 && e.movementX < 0) {
+        gridSizeBtn.style.left = `${position - 1}px`;
+        position -= 1;
+    }
+    
+    gridSizeLabel.textContent = `Number of grids: ${position + 1}`
+   
+}
+function color (e) {
+    e.preventDefault();
+    if (rainbowFlag) {
+        randomizeColor();
+    }
+    e.target.style.backgroundColor = penColor;
+}
+function randomizeColor() {
+    penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`; 
+
+}
+function gridRainbowListener () {
+    console.log(rainbowFlag);
+    if (rainbowFlag) {
+        gridContainer.addEventListener("mousedown", (event) => { 
+            event.preventDefault();
+            randomizeColor(event);
+            gridContainer.addEventListener("mousemove", randomizeColor);
+            gridContainer.addEventListener("mouseup", () => {gridContainer.removeEventListener("mousemove", randomizeColor);});
+            gridContainer.addEventListener("mouseleave", () => {gridContainer.removeEventListener("mousemove", randomizeColor);});
+        });
+    }
+    else {penColor = pencilSelector.style.backgroundColor;}
+}
+
 // Select and create containers for styling
 const etchContainer = document.createElement("div");
 etchContainer.classList = "etch-container container";
@@ -78,8 +148,8 @@ pencilSelectorLabel.style.marginTop = "-20px";
 pencilSelector.appendChild(pen2);
 btnsContainer.appendChild(pencilSelector);
 btnsContainer.appendChild(pencilSelectorLabel);
-// Create eraser and rainbow-pencil
 
+// Create eraser and rainbow-pencil
 const miscDiv = document.createElement("div");
 miscDiv.classList = "misc-container";
 
@@ -98,67 +168,23 @@ miscDiv.appendChild(eraser);
 
 btnsContainer.appendChild(miscDiv);
 
+//insert btns container and grid container to body
 etchContainer.appendChild(btnsContainer);
 etchContainer.appendChild(gridContainer);
 document.body.appendChild(etchContainer);
 
-let columns
-function createGrid(cells, classAdd="") {
-    columns = [];
-    gridContainer.innerHTML = "" 
-    let row;
-    let col;
-    // Create 16 rows
-    for (let i = 0; i < cells; i++) {
-        row = document.createElement("div");
-        row.classList = "grid row";
-
-        // Create 16 rows
-        for (let j = 0; j < cells; j++) {
-            col = document.createElement("div");
-            col.classList = `grid col ${classAdd}`;
-            columns.push(col);
-            row.appendChild(col);
-        }
-        gridContainer.appendChild(row);
-    }
-}
-function drag(e) {
-    let position = +window.getComputedStyle(gridSizeBtn).left.slice(0,-2);
-    console.log(position);
-    if (position < 99 && e.movementX > 0 && e.movementX > 3) {
-        position = position + 5 >= 99 ? 98 : position + 5;
-        gridSizeBtn.style.left = `${position + 1}px`;
-        position += 1;
-    }
-    else if (position < 99 && e.movementX > 0) {
-        gridSizeBtn.style.left = `${position + 1}px`;
-        position += 1;
-    }
-    else if (position > 0 && e.movementX < 0 && e.movementX < -3) {
-        position = position - 5 <= 0 ? 1 : position - 5;
-        gridSizeBtn.style.left = `${position - 1}px`;
-        position -= 1;
-    }
-    else if (position > 0 && e.movementX < 0) {
-        gridSizeBtn.style.left = `${position - 1}px`;
-        position -= 1;
-    }
-    
-    gridSizeLabel.textContent = `Number of grids: ${position + 1}`
-   
-}
-function color (e) {
-    e.target.style.backgroundColor = penColor;
-}
-
+// Create starting grid
 createGrid(16);
+// Create flag for pencil use
+let rainbowFlag = false;
 
-
+// Listener for grid-sizing
 gridSizeBtn.addEventListener("mousedown", function () {
     document.addEventListener("mousemove", drag);
     document.addEventListener("mouseup", () => {document.removeEventListener("mousemove", drag);});
 });
+
+// Listener for create new-grid
 gridSizeSubmitBtn.addEventListener("click", () => {
     if (columns[0].classList.contains("visible")) {
         createGrid(+gridSizeLabel.textContent.split(" ")[3], "visible");
@@ -167,38 +193,55 @@ gridSizeSubmitBtn.addEventListener("click", () => {
         createGrid(+gridSizeLabel.textContent.split(" ")[3]);
     }
 });
+
+// Listener for visibility toggle
 gridVisibility.addEventListener("change", (e) => {
     columns.forEach((column) => column.classList.toggle("visible"));
 });
 
-//Change display of color picker for background color
+// Listeners for toggling display of color-picker of background color
 backgroundSelector.addEventListener("click", () => {
     pen.style.display = "flex";
         
 });
-colorPicker.on('color:change', function(color) {
-    backgroundSelector.style.backgroundColor = color.hexString;
-    gridContainer.style.backgroundColor = color.hexString;
-});
+
 backgroundSelector.addEventListener("mouseleave", ()=> {
     pen.style.display = "none";
 });
 
-//Change display of color picker for background color
+// Apply selected background-color
+colorPicker.on('color:change', function(color) {
+    backgroundSelector.style.backgroundColor = color.hexString;
+    gridContainer.style.backgroundColor = color.hexString;
+});
+
+
+//Listeners for toggling display of color-picker of pencil-color
 pencilSelector.addEventListener("click", () => {
     pen2.style.display = "flex";
+    rainbowFlag = false;
+    penColor = window.getComputedStyle(pencilSelector).backgroundColor;
         
 });
-colorPicker2.on('color:change', function(color) {
-    pencilSelector.style.backgroundColor = penColor = color.hexString;
-});
+
 pencilSelector.addEventListener("mouseleave", ()=> {
     pen2.style.display = "none";
 });
+// Apply selected pencil-color
+colorPicker2.on('color:change', function(color) {
+    pencilSelector.style.backgroundColor = penColor = color.hexString;
+});
 
+// Listeners for draw on grid
 gridContainer.addEventListener("mousedown", (e) => {
+    e.preventDefault()
     color(e)
     gridContainer.addEventListener("mousemove", color);
     gridContainer.addEventListener("mouseup", () => {gridContainer.removeEventListener("mousemove", color);});
+    gridContainer.addEventListener("mouseleave", () => {gridContainer.removeEventListener("mousemove", color);});
 });
-gridContainer.addEventListener("mouseup", () => {gridContainer.removeEventListener("mousedown", color)})
+
+// Listener for rainbow-pen
+rainbowPen.addEventListener("click", (e) => {
+    rainbowFlag = true  
+});
