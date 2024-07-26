@@ -12,7 +12,7 @@ function createGrid(cells, classAdd="") {
         // Create 16 rows
         for (let j = 0; j < cells; j++) {
             col = document.createElement("div");
-            col.classList = `grid ${classAdd}`;
+            col.classList = `grid col ${classAdd}`;
             columns.push(col);
             row.appendChild(col);
         }
@@ -48,7 +48,9 @@ function color (e) {
     if (rainbowFlag) {
         randomizeColor();
     }
-    e.target.style.backgroundColor = penColor;
+    if (e.target.classList.contains("col")) {
+        e.target.style.backgroundColor = penColor;
+    }    
 }
 function randomizeColor() {
     penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`; 
