@@ -46,29 +46,13 @@ function drag(e) {
 function color (e) {
     e.preventDefault();
     if (rainbowFlag) {
-        randomizeColor();
-    }
+        penColor = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*11)/10})`;
+    } 
     if (e.target.classList.contains("col")) {
         e.target.style.backgroundColor = penColor;
     }    
 }
-function randomizeColor() {
-    penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`; 
 
-}
-function gridRainbowListener () {
-    console.log(rainbowFlag);
-    if (rainbowFlag) {
-        gridContainer.addEventListener("mousedown", (event) => { 
-            event.preventDefault();
-            randomizeColor(event);
-            gridContainer.addEventListener("mousemove", randomizeColor);
-            gridContainer.addEventListener("mouseup", () => {gridContainer.removeEventListener("mousemove", randomizeColor);});
-            gridContainer.addEventListener("mouseleave", () => {gridContainer.removeEventListener("mousemove", randomizeColor);});
-        });
-    }
-    else {penColor = pencilSelector.style.backgroundColor;}
-}
 
 // Select and create containers for styling
 const etchContainer = document.createElement("div");
@@ -114,15 +98,40 @@ btnsContainer.appendChild(gridSizeContanier);
 btnsContainer.appendChild(visibilityContainer);
 btnsContainer.appendChild(gridSizeSubmitBtn);
 
+// Create standard options to use in color-picker
+let pickerOpts = {
+    width: 150, 
+    layout: [
+        { 
+            component: iro.ui.Box,
+            options: {wheelLightness: false}
+        },
+        { 
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'hue',
+            }
+        },
+        { 
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'alpha',
+            }
+          },
+      ] 
+}
+
 // Create background-color fill option
 let pen = document.createElement("div");
-let colorPicker = new iro.ColorPicker(pen, {width: 100, color: "rgba(253, 249, 249, 0.555)"});
-pen.style = "position: relative; top: -80px; display: none;";
+let colorPicker = new iro.ColorPicker(pen, pickerOpts);
+pen.style = "position: relative; top: 80px; left: 110px; display: none;";
+
+
 
 const backgroundSelector = document.createElement("div");
 backgroundSelector.classList = "background-color";
 
-backgroundSelector.style.backgroundColor = "rgba(253, 249, 249, 0.555)";
+backgroundSelector.style.backgroundColor = "rgba(253, 249, 249, 0.5)";
 const backgroundSelectorLabel = document.createElement("label");
 backgroundSelectorLabel.for = "background-color";
 backgroundSelectorLabel.textContent = "background color";
@@ -133,25 +142,25 @@ btnsContainer.appendChild(backgroundSelector);
 btnsContainer.appendChild(backgroundSelectorLabel);
 
 // Create pen-color fill option
-let penColor = "#008800";
+let penColor = "#000000";
 let pen2 = document.createElement("div");
-let colorPicker2 = new iro.ColorPicker(pen2, {width: 100, color: penColor});
-pen2.style = "position: relative; top: -80px; display: none;";
+let colorPicker2 = new iro.ColorPicker(pen2, pickerOpts);
+pen2.style = "position: relative; top: 80px; left: 110px; display: none;";
 
 
-const pencilSelector = document.createElement("div");
-pencilSelector.classList = "pencil-color";
-pencilSelector.style.backgroundColor = penColor;
-const pencilSelectorLabel = document.createElement("label");
-pencilSelectorLabel.for = "pencil-color";
-pencilSelectorLabel.textContent = "pencil color";
-pencilSelectorLabel.style.marginTop = "-20px"; 
+const penSelector = document.createElement("div");
+penSelector.classList = "pen-color";
+penSelector.style.backgroundColor = penColor;
+const penSelectorLabel = document.createElement("label");
+penSelectorLabel.for = "pen-color";
+penSelectorLabel.textContent = "pen color";
+penSelectorLabel.style.marginTop = "-20px"; 
 
-pencilSelector.appendChild(pen2);
-btnsContainer.appendChild(pencilSelector);
-btnsContainer.appendChild(pencilSelectorLabel);
+penSelector.appendChild(pen2);
+btnsContainer.appendChild(penSelector);
+btnsContainer.appendChild(penSelectorLabel);
 
-// Create eraser and rainbow-pencil container
+// Create eraser and rainbow-pen container
 const miscDiv = document.createElement("div");
 miscDiv.classList = "misc-container";
 
@@ -177,7 +186,7 @@ document.body.appendChild(etchContainer);
 
 // Create starting grid
 createGrid(16);
-// Create flag for rainbow/regular pen functionality
+// Create flag for rainbow-pen functionality, true => rainbowPen 
 let rainbowFlag = false;
 
 // Listener for grid-sizing
@@ -213,25 +222,24 @@ backgroundSelector.addEventListener("mouseleave", ()=> {
 
 // Apply selected background-color
 colorPicker.on('color:change', function(color) {
-    backgroundSelector.style.backgroundColor = color.hexString;
-    gridContainer.style.backgroundColor = color.hexString;
+    backgroundSelector.style.backgroundColor = color.rgbaString;
+    gridContainer.style.backgroundColor = color.rgbaString;
 });
 
 
 //Listeners for toggling display of color-picker of pen-color
-pencilSelector.addEventListener("click", () => {
+penSelector.addEventListener("click", () => {
     pen2.style.display = "flex";
     rainbowFlag = false;
-    penColor = window.getComputedStyle(pencilSelector).backgroundColor;
-        
+    penColor = window.getComputedStyle(penSelector).backgroundColor;     
 });
 
-pencilSelector.addEventListener("mouseleave", ()=> {
+penSelector.addEventListener("mouseleave", ()=> {
     pen2.style.display = "none";
 });
 // Apply selected pen-color
 colorPicker2.on('color:change', function(color) {
-    pencilSelector.style.backgroundColor = penColor = color.hexString;
+    penSelector.style.backgroundColor = penColor = color.rgbaString;
 });
 
 // Listeners for draw on grid
@@ -244,6 +252,11 @@ gridContainer.addEventListener("mousedown", (e) => {
 });
 
 // Listener for rainbow-pen
-rainbowPen.addEventListener("click", (e) => {
-    rainbowFlag = true  
+rainbowPen.addEventListener("click", (e) => {rainbowFlag = true;});
+
+// Listener for eraser
+eraser.addEventListener("click", (e) => {
+    rainbowFlag = false;
+    penColor = "rgba(0, 0, 0, 0)";
 });
+ 
