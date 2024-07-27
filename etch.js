@@ -4,12 +4,12 @@ function createGrid(cells, classAdd="") {
     gridContainer.innerHTML = "" 
     let row;
     let col;
-    // Create 16 rows
+    // Create 16 rows intially
     for (let i = 0; i < cells; i++) {
         row = document.createElement("div");
         row.classList = "grid";
 
-        // Create 16 rows
+        // Create 16 rows intially
         for (let j = 0; j < cells; j++) {
             col = document.createElement("div");
             col.classList = `grid col ${classAdd}`;
@@ -114,7 +114,7 @@ btnsContainer.appendChild(gridSizeContanier);
 btnsContainer.appendChild(visibilityContainer);
 btnsContainer.appendChild(gridSizeSubmitBtn);
 
-// Create color fill option
+// Create background-color fill option
 let pen = document.createElement("div");
 let colorPicker = new iro.ColorPicker(pen, {width: 100, color: "rgba(253, 249, 249, 0.555)"});
 pen.style = "position: relative; top: -80px; display: none;";
@@ -132,7 +132,7 @@ backgroundSelector.appendChild(pen);
 btnsContainer.appendChild(backgroundSelector);
 btnsContainer.appendChild(backgroundSelectorLabel);
 
-// Create pencil-color fill option
+// Create pen-color fill option
 let penColor = "#008800";
 let pen2 = document.createElement("div");
 let colorPicker2 = new iro.ColorPicker(pen2, {width: 100, color: penColor});
@@ -151,7 +151,7 @@ pencilSelector.appendChild(pen2);
 btnsContainer.appendChild(pencilSelector);
 btnsContainer.appendChild(pencilSelectorLabel);
 
-// Create eraser and rainbow-pencil
+// Create eraser and rainbow-pencil container
 const miscDiv = document.createElement("div");
 miscDiv.classList = "misc-container";
 
@@ -177,7 +177,7 @@ document.body.appendChild(etchContainer);
 
 // Create starting grid
 createGrid(16);
-// Create flag for pencil use
+// Create flag for rainbow/regular pen functionality
 let rainbowFlag = false;
 
 // Listener for grid-sizing
@@ -218,7 +218,7 @@ colorPicker.on('color:change', function(color) {
 });
 
 
-//Listeners for toggling display of color-picker of pencil-color
+//Listeners for toggling display of color-picker of pen-color
 pencilSelector.addEventListener("click", () => {
     pen2.style.display = "flex";
     rainbowFlag = false;
@@ -229,7 +229,7 @@ pencilSelector.addEventListener("click", () => {
 pencilSelector.addEventListener("mouseleave", ()=> {
     pen2.style.display = "none";
 });
-// Apply selected pencil-color
+// Apply selected pen-color
 colorPicker2.on('color:change', function(color) {
     pencilSelector.style.backgroundColor = penColor = color.hexString;
 });
