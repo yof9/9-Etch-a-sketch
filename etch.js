@@ -62,6 +62,28 @@ const gridContainer = document.querySelector("div");
 const btnsContainer = document.createElement("div");
 btnsContainer.classList = "btns-container container"; 
 
+// Create night mode
+let mode = document.createElement("div");
+let modePicker = new iro.ColorPicker(mode, {
+    layout: [
+        { 
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'value',
+            }
+        },
+    ]
+});
+mode.style = "position: relative; bottom:0px; left: -300px; display: none;";
+
+const nightMode = document.createElement("button");
+nightMode.classList = "night-mode btn";
+
+
+nightMode.appendChild(mode)
+document.body.insertBefore(nightMode, document.body.firstElementChild);
+
+
 // Create draggable button for grid-size selection 
 const gridSizeContanier = document.createElement("div");
 gridSizeContanier.classList = "grid-size container"
@@ -97,7 +119,6 @@ btnsContainer.appendChild(gridSizeLabel);
 btnsContainer.appendChild(gridSizeContanier);
 btnsContainer.appendChild(visibilityContainer);
 btnsContainer.appendChild(gridSizeSubmitBtn);
-
 // Create standard options to use in color-picker
 let pickerOpts = {
     width: 150, 
@@ -167,15 +188,22 @@ miscDiv.classList = "misc-container";
 // Rainbow part
 const rainbowPen = document.createElement("button");
 rainbowPen.classList = "misc-btn rainbow";
-rainbowPen.textContent = "Rainbow pen";
+const rainbowLabel = document.createElement("label");
+rainbowLabel.textContent = "Rainbow pen";
+rainbowLabel.classList = "misc-label rainbow"
 
 // Eraser part 
 const eraser = document.createElement("button");
 eraser.classList = "misc-btn eraser";
-eraser.textContent = "Eraser";
+const eraserLabel = document.createElement("label");
+eraserLabel.textContent = "Eraser";
+eraserLabel.classList = "misc-label eraser"
 
 miscDiv.appendChild(rainbowPen);
+miscDiv.appendChild(rainbowLabel);
+
 miscDiv.appendChild(eraser);
+miscDiv.appendChild(eraserLabel);
 
 btnsContainer.appendChild(miscDiv);
 
@@ -186,6 +214,26 @@ document.body.appendChild(etchContainer);
 
 // Create starting grid
 createGrid(16);
+
+// Listener for night-mode
+nightMode.addEventListener("click", () => {
+    mode.style.display = "flex";
+    
+})
+nightMode.addEventListener("mouseleave", ()=> {
+    mode.style.display = "none";
+});
+// Apply selected night-mode
+modePicker.on("color:change", function(color) {
+    console.log(color)
+    console.log(window.getComputedStyle(document.body.firstElementChild).backgroundColor);
+    for (let elem of document.body.children) {
+        
+        if (elem.NODE_TYPE === 0) {
+            console.log(elem)
+        }
+    }
+})
 // Create flag for rainbow-pen functionality, true => rainbowPen 
 let rainbowFlag = false;
 
