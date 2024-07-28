@@ -26,10 +26,16 @@ function modifyDarkness(elem, color, oldColor) {
     if (oldColor.startsWith("rgba")) {
         newColorVals = oldColor.slice(5, -1).split(",").map((v, index) => {
             if(index !== 3){
-                return v*gradient;
-            } 
-            else {
-                return v;
+                if (gradient>1){
+                    let factor;
+                    gradient == 2 ? factor=127.5 : 
+                    gradient > 1.75 ? factor=63.75 : 
+                    gradient > 1.50 ? factor = 31.875 : 
+                    gradient > 1.25 ? fator = 15.9375 :
+                    gradient = 7.96875 
+                    v = +v + factor
+                }
+                return v*gradient
             }
         });
         for (let i = 0; i <newColorVals.length; i++) {
@@ -40,7 +46,20 @@ function modifyDarkness(elem, color, oldColor) {
         newColor = `rgba(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]}, ${newColorVals[3]})`;
     }
     else if (oldColor.startsWith("rgb")) {
-        newColorVals = oldColor.slice(4, -1).split(",").map((v) => v*gradient);
+        newColorVals = oldColor.slice(4, -1).split(",").map((v) => {
+            if (gradient>1){
+                let factor;
+                gradient == 2 ? factor=127.5 : 
+                gradient > 1.75 ? factor=63.75 : 
+                gradient > 1.50 ? factor = 31.875 : 
+                gradient > 1.25 ? fator = 15.9375 :
+                gradient = 7.96875 
+                v = +v + factor
+            }
+            return v*gradient
+
+        });
+        
         for (let i = 0; i <newColorVals.length; i++) {
             if (+newColorVals[i] > 255) {
                 newColorVals[i] = 255;
@@ -48,7 +67,8 @@ function modifyDarkness(elem, color, oldColor) {
         }
         newColor = `rgb(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]})`;
     }
-    else {console.log("Unknowm Color Format", oldColor)}
+    else {console.log("Unknowm Color Format")}
+    if (elem.classList.contains("col")) {console.log(newColor, oldColor, gradient)}
     
     elem.style.backgroundColor = newColor;
 }
