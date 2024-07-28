@@ -37,6 +37,7 @@ function modifyDarkness(elem, color, oldColor) {
                 }
                 return v*gradient
             }
+            else {return v}
         });
         for (let i = 0; i <newColorVals.length; i++) {
             if (+newColorVals[i] > 255) {
@@ -68,7 +69,7 @@ function modifyDarkness(elem, color, oldColor) {
         newColor = `rgb(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]})`;
     }
     else {console.log("Unknowm Color Format")}
-    if (elem.classList.contains("col")) {console.log(newColor, oldColor, gradient)}
+    if (elem.classList.contains("pen-color")) {console.log(newColor, oldColor, gradient)}
     
     elem.style.backgroundColor = newColor;
 }
@@ -92,7 +93,7 @@ function recordColor(elem = document.body) {
 function iterAll(color, elem = document.body) {
         
     for (let el of elem.children) {
-        if (!el.classList.contains("row")) {
+        if (!el.classList.contains("row" && "btn")) {
         modifyDarkness(el, color, colorObj[`${el.data_color}`]);}      
         iterAll(color, el);
     }
@@ -143,8 +144,9 @@ function color (e) {
         penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`;
     } 
     if (e.target.classList.contains("col")) {
-        e.target.style.backgroundColor  = penColor;
-        colorObj[`${e.target.data_color}`] = penColor;
+        colorObj[`${e.target.data_color}`] = e.target.style.backgroundColor = penColor
+        modifyDarkness(e.target, modePicker.color, colorObj[`${e.target.data_color}`])
+        
     }   
 }
 
@@ -169,6 +171,8 @@ let modePicker = new iro.ColorPicker(mode, {
         },
     ]
 });
+modePicker.color.$.v = 50;
+
 mode.style = "position: relative; bottom:0px; left: -300px; display: none;";
 
 const nightMode = document.createElement("button");
@@ -219,7 +223,12 @@ btnsContainer.appendChild(gridSizeSubmitBtn);
 let pickerOpts = {
     width: 150,
     layoutDirection: "horizontal",
-    display: "flex", 
+    display: "flex",
+    colors: [
+        'rgb(100%, 0, 0)', // pure red
+        'rgb(0, 100%, 0)', // pure green
+        'rgb(0, 0, 100%)', // pure blue
+      ], 
     layout: [
         { 
             component: iro.ui.Wheel,
@@ -356,16 +365,19 @@ backgroundSelector.addEventListener("mouseleave", ()=> {
 
 // Apply selected background-color
 colorPicker.on('color:change', function(color) {
-    backgroundSelector.style.backgroundColor = colorObj[`${backgroundSelector.data_color}`] = color.rgbaString;
-    gridContainer.style.backgroundColor = colorObj[`${gridContainer.data_color}`] = color.rgbaString;
+    colorObj[`${backgroundSelector.data_color}`] = color.rgbaString;
+    colorObj[`${gridContainer.data_color}`] = color.rgbaString;
+    modifyDarkness(backgroundSelector, modePicker.color, colorObj[`${backgroundSelector.data_color}`]);
+    modifyDarkness(gridContainer, modePicker.color, colorObj[`${gridContainer.data_color}`]);
 });
 
 
 //Listeners for toggling display of color-picker of pen-color
 penSelector.addEventListener("click", () => {
+    document.body.style.cursor = "url('./imgs/pencil-cursor.png'), auto";
     pen2.style.display = "flex";
     rainbowFlag = false;
-    penColor = window.getComputedStyle(penSelector).backgroundColor;     
+    penColor = colorObj[`${penSelector.data_color}`];     
 });
 
 penSelector.addEventListener("mouseleave", ()=> {
@@ -373,7 +385,8 @@ penSelector.addEventListener("mouseleave", ()=> {
 });
 // Apply selected pen-color
 colorPicker2.on('color:change', function(color) {
-    penSelector.style.backgroundColor = colorObj[`${penSelector.data_color}`] = penColor = color.rgbaString;
+    colorObj[`${penSelector.data_color}`] = penColor = color.rgbaString;
+    modifyDarkness(penSelector, modePicker.color, colorObj[`${penSelector.data_color}`]);
 });
 
 // Listeners for draw on grid
@@ -409,4 +422,15 @@ nightMode.addEventListener("mouseleave", ()=> {
 // Apply selected night-mode
 modePicker.on("input:end", function(color) {
     iterAll(color);    
-})
+});
+
+// Add cursors for buttons
+
+document.body.addEventListener("click", (e) => {
+    if (e.target.classList.contains("eraser")) {
+        document.body.style.cursor = "url('./imgs/eraser-cursor.png'), auto";
+    }
+    else if (e.target.classList.contains("rainbow" && "misc-btn")) {
+        document.body.style.cursor = "url('./imgs/rainbow-pen.png'), auto";
+    }
+});

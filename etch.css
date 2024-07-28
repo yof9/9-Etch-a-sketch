@@ -1,12 +1,14 @@
 *{
     margin: 0px;
     padding: 0px;
+    outline: solid 2px yellow;
 }
 
-body,html {
+body, html{
     background-image: linear-gradient(hsla(0, 0%, 0%, 0), hsla(0, 0%, 100%, 0)),url("./imgs/etchBackground.jpg");
     height: 100%;
     width: 100%;
+    cursor: url("./imgs/pencil-cursor.png"), auto;
 }
 
 h1 {
@@ -104,9 +106,10 @@ h1 {
  }
 .visibility {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-top: -80px;
+    width: 100%;
     font-family: 'Times New Roman', Times, serif;
     gap: 10px;
 }
@@ -165,6 +168,24 @@ button.misc-btn{
     display: flex;
     flex: 1;
 }
+
 .visible {
     outline: dashed 1px rgb(128, 128, 128);
+}
+
+.eraser:hover {
+    cursor: url('./imgs/eraser-cursor.png'), auto;
+}
+
+.rainbow.misc-btn:hover {
+    cursor: url('./imgs/rainbow-pen.png'), auto;
+}
+.pen-color:hover {
+    cursor : url('./imgs/pencil-cursor.png'), auto;
+}
+.background-color:hover {
+    cursor : url('./imgs/bucket.png'), auto;
+}
+.visibility:hover, button:hover, input:hover {
+    cursor : url('./imgs/arrow-cursor.png'), auto;
 }
