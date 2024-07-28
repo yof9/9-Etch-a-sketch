@@ -316,6 +316,8 @@ gridSizeSubmitBtn.addEventListener("click", () => {
     else {
         createGrid(+gridSizeLabel.textContent.split(" ")[3]);
     }
+    counter = 0;
+    recordColor()
 });
 
 // Listener for visibility toggle
