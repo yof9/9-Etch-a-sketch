@@ -1,7 +1,10 @@
+/* This javascript file use use of a low-friction API, iro.js from: https://iro.js.org/, inorder
+to minimize code bloat and ease adding functionality */
 let columns
 function createGrid(cells, classAdd="") {
+
     columns = [];
-    gridContainer.innerHTML = "" 
+    gridContainer.innerHTML = ""; 
     let row;
     let col;
     // Create 16 rows intially
@@ -22,6 +25,7 @@ function createGrid(cells, classAdd="") {
 
 // Change brightness
 function modifyDarkness(elem, color, oldColor) {
+
     let gradient = color.$.v / 50;
     if (oldColor.startsWith("rgba")) {
         newColorVals = oldColor.slice(5, -1).split(",").map((v, index) => {
@@ -33,12 +37,13 @@ function modifyDarkness(elem, color, oldColor) {
                     gradient > 1.50 ? factor = 31.875 : 
                     gradient > 1.25 ? fator = 15.9375 :
                     gradient = 7.96875 
-                    v = +v + factor
+                    v = +v + factor;
                 }
-                return v*gradient
+                return v*gradient;
             }
-            else {return v}
+            else {return v;}
         });
+
         for (let i = 0; i <newColorVals.length; i++) {
             if (+newColorVals[i] > 255) {
                 newColorVals[i] = 255;
@@ -55,9 +60,9 @@ function modifyDarkness(elem, color, oldColor) {
                 gradient > 1.50 ? factor = 31.875 : 
                 gradient > 1.25 ? fator = 15.9375 :
                 gradient = 7.96875 
-                v = +v + factor
+                v = +v + factor;
             }
-            return v*gradient
+            return v*gradient;
 
         });
         
@@ -68,17 +73,14 @@ function modifyDarkness(elem, color, oldColor) {
         }
         newColor = `rgb(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]})`;
     }
-    else {console.log("Unknowm Color Format")}
-    if (elem.classList.contains("pen-color")) {console.log(newColor, oldColor, gradient)}
     
     elem.style.backgroundColor = newColor;
 }
 
-let colorObj = {}
+// Record color
+let colorObj = {};
 let brightness;
 let counter = 0;
-
-// Record color
 function recordColor(elem = document.body) {
 
     for (let el of elem.children) {
@@ -94,7 +96,8 @@ function iterAll(color, elem = document.body) {
         
     for (let el of elem.children) {
         if (!el.classList.contains("row" && "btn")) {
-        modifyDarkness(el, color, colorObj[`${el.data_color}`]);}      
+            modifyDarkness(el, color, colorObj[`${el.data_color}`]);
+        }      
         iterAll(color, el);
     }
            
@@ -112,8 +115,10 @@ function iterAll(color, elem = document.body) {
         }    
     }
 }
+
 // Drag grid-btn and update label
 function drag(e) {
+
     let position = +window.getComputedStyle(gridSizeBtn).left.slice(0,-2);
     if (position < 99 && e.movementX > 0 && e.movementX > 3) {
         position = position + 5 >= 99 ? 98 : position + 5;
@@ -134,22 +139,21 @@ function drag(e) {
         position -= 1;
     }
     
-    gridSizeLabel.textContent = `Number of grids: ${position + 1}`
-   
+    gridSizeLabel.textContent = `Number of grids: ${position + 1}`;   
 }
+
 // Fill each cell with given color
 function color (e) {
+
     e.preventDefault();
     if (rainbowFlag) {
         penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`;
     } 
     if (e.target.classList.contains("col")) {
-        colorObj[`${e.target.data_color}`] = e.target.style.backgroundColor = penColor
-        modifyDarkness(e.target, modePicker.color, colorObj[`${e.target.data_color}`])
-        
+        colorObj[`${e.target.data_color}`] = e.target.style.backgroundColor = penColor;
+        modifyDarkness(e.target, modePicker.color, colorObj[`${e.target.data_color}`]);        
     }   
 }
-
 
 // Select and create containers for styling
 const etchContainer = document.createElement("div");
@@ -185,14 +189,12 @@ document.body.insertBefore(nightMode, document.body.firstElementChild);
 
 // Create draggable button for grid-size selection 
 const gridSizeContanier = document.createElement("div");
-gridSizeContanier.classList = "grid-size container"
-gridSizeContanier.id = "grid-size";
+gridSizeContanier.classList = "grid-size container";
 
 const gridSizeBtn = document.createElement("button");
 gridSizeBtn.classList = "grid-size btn drag";
 
-const gridSizeLabel = document.createElement("label");
-gridSizeLabel.for = "grid-size";
+const gridSizeLabel = document.createElement("span");
 gridSizeLabel.textContent = "Number of grids: 16";
 gridSizeLabel.style.marginTop = "25px"; 
 
@@ -207,7 +209,8 @@ visibilityContainer.classList = "visibility";
 
 const gridVisibility = document.createElement("input");
 gridVisibility.type = "checkbox";
-const gridVisibilityLabel = document.createElement("label");
+
+const gridVisibilityLabel = document.createElement("span");
 gridVisibilityLabel.textContent = "Visible Grid";
 
 visibilityContainer.appendChild(gridVisibilityLabel);
@@ -266,8 +269,7 @@ const backgroundSelector = document.createElement("div");
 backgroundSelector.classList = "background-color";
 
 backgroundSelector.style.backgroundColor = "rgba(253, 249, 249, 0.5)";
-const backgroundSelectorLabel = document.createElement("label");
-backgroundSelectorLabel.for = "background-color";
+const backgroundSelectorLabel = document.createElement("span");
 backgroundSelectorLabel.textContent = "background color";
 backgroundSelectorLabel.style.marginTop = "-20px"; 
 
@@ -285,8 +287,7 @@ pen2.style = "position: relative; top: -90px; left: 0px; display: none;";
 const penSelector = document.createElement("div");
 penSelector.classList = "pen-color";
 penSelector.style.backgroundColor = penColor;
-const penSelectorLabel = document.createElement("label");
-penSelectorLabel.for = "pen-color";
+const penSelectorLabel = document.createElement("span");
 penSelectorLabel.textContent = "pen color";
 penSelectorLabel.style.marginTop = "-20px"; 
 
@@ -301,14 +302,14 @@ miscDiv.classList = "misc-container";
 // Rainbow part
 const rainbowPen = document.createElement("button");
 rainbowPen.classList = "misc-btn rainbow";
-const rainbowLabel = document.createElement("label");
+const rainbowLabel = document.createElement("span");
 rainbowLabel.textContent = "Rainbow pen";
 rainbowLabel.classList = "misc-label rainbow"
 
 // Eraser part 
 const eraser = document.createElement("button");
 eraser.classList = "misc-btn eraser";
-const eraserLabel = document.createElement("label");
+const eraserLabel = document.createElement("span");
 eraserLabel.textContent = "Eraser";
 eraserLabel.classList = "misc-label eraser"
 
@@ -346,7 +347,7 @@ gridSizeSubmitBtn.addEventListener("click", () => {
         createGrid(+gridSizeLabel.textContent.split(" ")[3]);
     }
     counter = 0;
-    recordColor()
+    recordColor();
 });
 
 // Listener for visibility toggle
@@ -374,7 +375,7 @@ colorPicker.on('color:change', function(color) {
 
 //Listeners for toggling display of color-picker of pen-color
 penSelector.addEventListener("click", () => {
-    document.body.style.cursor = "url('./imgs/pencil-cursor.png'), auto";
+    document.body.style.cursor = "url('./imgs/pen-cursor.png'), auto";
     pen2.style.display = "flex";
     rainbowFlag = false;
     penColor = colorObj[`${penSelector.data_color}`];     
@@ -383,6 +384,7 @@ penSelector.addEventListener("click", () => {
 penSelector.addEventListener("mouseleave", ()=> {
     pen2.style.display = "none";
 });
+
 // Apply selected pen-color
 colorPicker2.on('color:change', function(color) {
     colorObj[`${penSelector.data_color}`] = penColor = color.rgbaString;

@@ -1,14 +1,13 @@
 *{
     margin: 0px;
     padding: 0px;
-    outline: solid 2px yellow;
 }
 
 body, html{
     background-image: linear-gradient(hsla(0, 0%, 0%, 0), hsla(0, 0%, 100%, 0)),url("./imgs/etchBackground.jpg");
     height: 100%;
     width: 100%;
-    cursor: url("./imgs/pencil-cursor.png"), auto;
+    cursor: url("./imgs/pen-cursor.png"), auto;
 }
 
 h1 {
@@ -161,7 +160,7 @@ button.misc-btn{
     background-image: url("./imgs/eraser.svg");
 }
 .rainbow.misc-btn {
-    background-image: url("./imgs/rainbow.svg");
+    background-image: url("./imgs/rainbow.png");
 } 
 
 .grid {
@@ -181,7 +180,7 @@ button.misc-btn{
     cursor: url('./imgs/rainbow-pen.png'), auto;
 }
 .pen-color:hover {
-    cursor : url('./imgs/pencil-cursor.png'), auto;
+    cursor : url('./imgs/color-palette-cursor.png'), auto;
 }
 .background-color:hover {
     cursor : url('./imgs/bucket.png'), auto;
