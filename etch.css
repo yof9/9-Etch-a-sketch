@@ -2,8 +2,11 @@
     margin: 0px;
     padding: 0px;
 }
-body {
-    background-image: url("./imgs/etchBackground.jpg");
+
+body,html {
+    background-image: linear-gradient(hsla(0, 0%, 0%, 0), hsla(0, 0%, 100%, 0)),url("./imgs/etchBackground.jpg");
+    height: 100%;
+    width: 100%;
 }
 
 h1 {
@@ -12,8 +15,17 @@ h1 {
     font-style: oblique;
     text-shadow: 0 0 30px;
     text-align: center;
-    text-decoration:underline black; 
+    text-decoration:underline rgb(0, 0, 0); 
 }
+.night-mode.btn {
+    background-image: url("./imgs/Sun.svg");
+    height: 32px;
+    width: 32px;
+    margin-left: auto;
+    display:block;
+    background-color: rgb(0, 0, 0);
+    border-radius: 50%;
+}  
 
 .etch-container {
     margin: 2%;
@@ -29,7 +41,7 @@ h1 {
     display:flex;
     flex-direction: column;
     flex: 0 1 1;
-    background-color: #f0ffff4d;
+    background-color: rgba(240, 255, 255, 0.302);
     height: 500px;
     width: 500px;
     border-radius: 10%;   
@@ -42,7 +54,7 @@ h1 {
     justify-content: flex-start;
     gap: 30px; 
     flex: 0 1 1; 
-    background-color: #2e2c2c;
+    background-color: rgb(46, 44, 44);
     color:rgb(205, 221, 221); 
     border-radius: 2%;
     width: 200px;
@@ -52,8 +64,8 @@ h1 {
 .grid-size.container {
     margin-top: -25px;
     width: 119px;
-    border:solid 1px black; 
-    background-color: hsla(0, 2%, 80%, 0.459);
+    border:solid 1px rgb(0, 0, 0); 
+    background-color: rgba(205, 203, 203, 0.459);
     height: 8px;
     border-radius: 20px;
 
@@ -61,12 +73,12 @@ h1 {
 .grid-size.btn{
 
     border:solid 2x rgba(0, 0, 0, 0.555); 
-    background-color: hsl(210, 89%, 48%);
+    background-color: rgb(13, 122, 231);
     border-radius: 10px;    
 }
 .grid-size.btn.drag {
     background-color: (210, 89%, 48%, 0.7);
-    border:solid 1px black;
+    border:solid 1px rgb(0, 0, 0);
     position: relative;
     left: 15px;
     margin-top: -8px;
@@ -85,7 +97,7 @@ h1 {
     scale: 1.2;
     font-size:13px;
     border-width:3px;
-    box-shadow: 0 0 30px white;
+    box-shadow: 0 0 30px rgb(255, 255, 255);
 }
  .submit.grid-size:hover {
     background-color: rgb(77, 154, 231);
@@ -116,7 +128,7 @@ h1 {
     margin-top: -10px;
 }
 .background-color:hover, .pen-color:hover {
-    box-shadow: 0 0 30px white;
+    box-shadow: 0 0 30px rgb(255, 255, 255);
     border-width: 4px;
 }
 .background-color {
@@ -141,7 +153,6 @@ button.misc-btn{
 }
 .misc-label {
     flex: 1;
-    color:black;
 }
 .eraser.misc-btn {
     background-image: url("./imgs/eraser.svg");
@@ -149,13 +160,11 @@ button.misc-btn{
 .rainbow.misc-btn {
     background-image: url("./imgs/rainbow.svg");
 } 
-.reseter.misc-btn {
-    background-image: url("./imgs/grid-reset.svg");
-}  
+
 .grid {
     display: flex;
     flex: 1;
 }
 .visible {
-    outline: dashed 1px grey;
+    outline: dashed 1px rgb(128, 128, 128);
 }

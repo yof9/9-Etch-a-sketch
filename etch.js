@@ -7,7 +7,7 @@ function createGrid(cells, classAdd="") {
     // Create 16 rows intially
     for (let i = 0; i < cells; i++) {
         row = document.createElement("div");
-        row.classList = "grid";
+        row.classList = "grid row";
 
         // Create 16 rows intially
         for (let j = 0; j < cells; j++) {
@@ -19,6 +19,79 @@ function createGrid(cells, classAdd="") {
         gridContainer.appendChild(row);
     }
 }
+
+// Change brightness
+function modifyDarkness(elem, color, oldColor) {
+    let gradient = color.$.v / 50;
+    if (oldColor.startsWith("rgba")) {
+        newColorVals = oldColor.slice(5, -1).split(",").map((v, index) => {
+            if(index !== 3){
+                return v*gradient;
+            } 
+            else {
+                return v;
+            }
+        });
+        for (let i = 0; i <newColorVals.length; i++) {
+            if (+newColorVals[i] > 255) {
+                newColorVals[i] = 255;
+            }
+        }
+        newColor = `rgba(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]}, ${newColorVals[3]})`;
+    }
+    else if (oldColor.startsWith("rgb")) {
+        newColorVals = oldColor.slice(4, -1).split(",").map((v) => v*gradient);
+        for (let i = 0; i <newColorVals.length; i++) {
+            if (+newColorVals[i] > 255) {
+                newColorVals[i] = 255;
+            }
+        }
+        newColor = `rgb(${newColorVals[0]}, ${newColorVals[1]}, ${newColorVals[2]})`;
+    }
+    else {console.log("Unknowm Color Format", oldColor)}
+    
+    elem.style.backgroundColor = newColor;
+}
+
+let colorObj = {}
+let brightness;
+let counter = 0;
+
+// Record color
+function recordColor(elem = document.body) {
+
+    for (let el of elem.children) {
+        el.data_color = counter;
+        colorObj[`${counter}`] = window.getComputedStyle(el).backgroundColor;
+        counter++;
+        recordColor(el);
+    }
+}
+
+// Change brightness of body and itrate over all it's decendants recursively
+function iterAll(color, elem = document.body) {
+        
+    for (let el of elem.children) {
+        if (!el.classList.contains("row")) {
+        modifyDarkness(el, color, colorObj[`${el.data_color}`]);}      
+        iterAll(color, el);
+    }
+           
+    if (elem.nodeName === "BODY") {
+        if (color.$.v > 50) {
+            brightness = (color.$.v-50) * 0.015; 
+            elem.style.backgroundImage = `linear-gradient(hsla(0, 0%, 100%, ${brightness}), hsla(0, 0%, 100%, ${brightness})),url("./imgs/etchBackground.jpg")`;
+        }
+        else if (color.$.v < 50){
+            brightness = (50 - color.$.v) * 0.015; 
+            elem.style.backgroundImage = `linear-gradient(hsla(0, 0%, 0%, ${brightness}), hsla(0, 0%, 0%, ${brightness})),url("./imgs/etchBackground.jpg")`;
+        }
+        else {
+            elem.style.backgroundImage = `linear-gradient(hsla(0, 0%, 0%, 0), hsla(0, 0%, 100%, 0)),url("./imgs/etchBackground.jpg")`;
+        }    
+    }
+}
+// Drag grid-btn and update label
 function drag(e) {
     let position = +window.getComputedStyle(gridSizeBtn).left.slice(0,-2);
     if (position < 99 && e.movementX > 0 && e.movementX > 3) {
@@ -43,14 +116,16 @@ function drag(e) {
     gridSizeLabel.textContent = `Number of grids: ${position + 1}`
    
 }
+// Fill each cell with given color
 function color (e) {
     e.preventDefault();
     if (rainbowFlag) {
-        penColor = `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*11)/10})`;
+        penColor = `rgb(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)})`;
     } 
     if (e.target.classList.contains("col")) {
-        e.target.style.backgroundColor = penColor;
-    }    
+        e.target.style.backgroundColor  = penColor;
+        colorObj[`${e.target.data_color}`] = penColor;
+    }   
 }
 
 
@@ -119,18 +194,27 @@ btnsContainer.appendChild(gridSizeLabel);
 btnsContainer.appendChild(gridSizeContanier);
 btnsContainer.appendChild(visibilityContainer);
 btnsContainer.appendChild(gridSizeSubmitBtn);
+
 // Create standard options to use in color-picker
 let pickerOpts = {
-    width: 150, 
+    width: 150,
+    layoutDirection: "horizontal",
+    display: "flex", 
     layout: [
         { 
-            component: iro.ui.Box,
+            component: iro.ui.Wheel,
             options: {wheelLightness: false}
         },
         { 
             component: iro.ui.Slider,
             options: {
-              sliderType: 'hue',
+              sliderType: 'value',
+            }
+        },
+        { 
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'saturation',
             }
         },
         { 
@@ -145,7 +229,7 @@ let pickerOpts = {
 // Create background-color fill option
 let pen = document.createElement("div");
 let colorPicker = new iro.ColorPicker(pen, pickerOpts);
-pen.style = "position: relative; top: 80px; left: 110px; display: none;";
+pen.style = "position: relative; top: -90px; left: 0px; display: none;";
 
 
 
@@ -163,10 +247,10 @@ btnsContainer.appendChild(backgroundSelector);
 btnsContainer.appendChild(backgroundSelectorLabel);
 
 // Create pen-color fill option
-let penColor = "#000000";
+let penColor = "rgb(0, 0, 0)";
 let pen2 = document.createElement("div");
 let colorPicker2 = new iro.ColorPicker(pen2, pickerOpts);
-pen2.style = "position: relative; top: 80px; left: 110px; display: none;";
+pen2.style = "position: relative; top: -90px; left: 0px; display: none;";
 
 
 const penSelector = document.createElement("div");
@@ -215,25 +299,6 @@ document.body.appendChild(etchContainer);
 // Create starting grid
 createGrid(16);
 
-// Listener for night-mode
-nightMode.addEventListener("click", () => {
-    mode.style.display = "flex";
-    
-})
-nightMode.addEventListener("mouseleave", ()=> {
-    mode.style.display = "none";
-});
-// Apply selected night-mode
-modePicker.on("color:change", function(color) {
-    console.log(color)
-    console.log(window.getComputedStyle(document.body.firstElementChild).backgroundColor);
-    for (let elem of document.body.children) {
-        
-        if (elem.NODE_TYPE === 0) {
-            console.log(elem)
-        }
-    }
-})
 // Create flag for rainbow-pen functionality, true => rainbowPen 
 let rainbowFlag = false;
 
@@ -260,8 +325,7 @@ gridVisibility.addEventListener("change", (e) => {
 
 // Listeners for toggling display of color-picker of background color
 backgroundSelector.addEventListener("click", () => {
-    pen.style.display = "flex";
-        
+    pen.style.display = "flex";        
 });
 
 backgroundSelector.addEventListener("mouseleave", ()=> {
@@ -270,8 +334,8 @@ backgroundSelector.addEventListener("mouseleave", ()=> {
 
 // Apply selected background-color
 colorPicker.on('color:change', function(color) {
-    backgroundSelector.style.backgroundColor = color.rgbaString;
-    gridContainer.style.backgroundColor = color.rgbaString;
+    backgroundSelector.style.backgroundColor = colorObj[`${backgroundSelector.data_color}`] = color.rgbaString;
+    gridContainer.style.backgroundColor = colorObj[`${gridContainer.data_color}`] = color.rgbaString;
 });
 
 
@@ -287,7 +351,7 @@ penSelector.addEventListener("mouseleave", ()=> {
 });
 // Apply selected pen-color
 colorPicker2.on('color:change', function(color) {
-    penSelector.style.backgroundColor = penColor = color.rgbaString;
+    penSelector.style.backgroundColor = colorObj[`${penSelector.data_color}`] = penColor = color.rgbaString;
 });
 
 // Listeners for draw on grid
@@ -307,4 +371,20 @@ eraser.addEventListener("click", (e) => {
     rainbowFlag = false;
     penColor = "rgba(0, 0, 0, 0)";
 });
- 
+
+// Create a record of color
+recordColor();
+
+// Listener for night-mode
+nightMode.addEventListener("click", () => {
+    mode.style.display = "flex";
+    
+})
+nightMode.addEventListener("mouseleave", ()=> {
+    mode.style.display = "none";
+});
+
+// Apply selected night-mode
+modePicker.on("input:end", function(color) {
+    iterAll(color);    
+})
